@@ -33,9 +33,11 @@ function configs.__newindex(t, config_name, config_def)
                 event = "BufReadPost",
             }
         event_conf.callback = function(opts)
-            if util.webots_root(opts.buf) ~= nil then
+            local webots_root = util.webots_root(opts.buf)
+            if webots_root ~= nil then
                 config.callback()
             end
+            util.current_root = webots_root
         end
         api.nvim_create_autocmd(event_conf.event, {
             pattern = event_conf.pattern or "*",
@@ -44,7 +46,7 @@ function configs.__newindex(t, config_name, config_def)
             desc = string.format("Checks whether extra %s should start.", config.name),
         })
 
-        -- forcefully execute callback on the current buffer
+        -- forcefully execute callback on the current buffer if needed
         local buf = api.nvim_get_current_buf()
         if
             event_conf.pattern

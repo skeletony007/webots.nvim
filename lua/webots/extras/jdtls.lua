@@ -3,8 +3,7 @@ local util = require("webots.util")
 return {
     default_config = {
         callback = function()
-            -- setup jdtls
-            vim.lsp.config("jdtls", {
+            vim.lsp.buf_notify(0, "workspace/didChangeConfiguration", {
                 settings = {
                     java = {
                         project = {
@@ -13,10 +12,6 @@ return {
                     },
                 },
             })
-
-            -- restart jdtls
-            vim.lsp.enable("jdtls", false)
-            vim.lsp.enable("jdtls", true)
         end,
         filetypes = {
             "java",
