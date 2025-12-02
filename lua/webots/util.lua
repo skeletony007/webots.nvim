@@ -73,7 +73,7 @@ M.project_relative_path = function(full_path) return full_path:sub(#string.forma
 ---@return string full_path full path
 M.project_full_path = function(relative_path) return string.format("%s/%s", M.current_root, relative_path) end
 
-M.popup_command = function(cmd)
+M.hsplit_command = function(cmd)
     local buf = vim.api.nvim_create_buf(false, true)
     vim.bo[buf].buftype = "nofile"
     vim.bo[buf].bufhidden = "wipe"
@@ -125,7 +125,7 @@ end
 --- Start a Webots instance in realtime mode
 ---@param worldfile string
 M.webots_realtime = function(worldfile)
-    M.popup_command({
+    M.hsplit_command({
         "webots",
         "--mode=realtime",
         "--stdout",
@@ -137,7 +137,7 @@ end
 --- Start a Webots instance in fast mode
 ---@param worldfile string world file name
 M.webots_fast = function(worldfile)
-    M.popup_command({
+    M.hsplit_command({
         "webots",
         "--mode=fast",
         "--stdout",
