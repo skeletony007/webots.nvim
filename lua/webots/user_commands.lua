@@ -97,7 +97,7 @@ for k, v in pairs(user_command_aliases) do
         vim.cmd(string.format("%s %s", v.to, opts.args))
         vim.notify(
             string.format(
-                [[prefer user command "%s" instead of "%s", which will be removed in version %s]],
+                [[[webots] prefer user command "%s" instead of "%s", which will be removed in version %s]],
                 v.to,
                 k,
                 v.version
