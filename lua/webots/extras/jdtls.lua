@@ -7,7 +7,7 @@ return {
                 settings = {
                     java = {
                         project = {
-                            referencedLibraries = util.libraries,
+                            referencedLibraries = util.java_libraries,
                         },
                     },
                 },

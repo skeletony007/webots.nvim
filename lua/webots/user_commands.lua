@@ -23,34 +23,50 @@ local webots_complete = function(_, line)
     return vim.tbl_filter(
         function(val) return vim.startswith(val, l[#l]) end,
         vim.tbl_map(
-            function(item) return string.sub(item, #string.format("%s/worlds/", util.current_root) + 1) end,
+            function(item) return util.project_relative_path(item):sub(#"worlds/" + 1) end,
             util.find_worldfiles()
         )
     )
 end
 
---- Makes a new command selecting a worldfile and executing a function on the it
+--- Makes a new command (function) selecting a worldfile and executing the given
+--- function on the it
 ---
 ---@param f fun(worldfile: string) Function that takes the full path to a worldfile
 ---@return fun(opts: table) command New command
-local make_webots_command = function(f)
+local webots_worldfile_command = function(f)
+    local worldfile_full_path = function(relative_worldfile_path)
+        return util.project_full_path(string.format("worlds/%s", relative_worldfile_path))
+    end
+    local worldfile_relative_path = function(full_worldfile_path)
+        return util.project_relative_path(full_worldfile_path):sub(#"worlds/" + 1)
+    end
+
     return function(opts)
         local fargs = opts.fargs
         if #fargs == 1 then
-            f(string.format("%s/worlds/%s", util.current_root, fargs[1]))
+            f(worldfile_full_path(fargs[1]))
             return
         end
         if #fargs > 1 then
             error("Too many arguments.")
         end
-        vim.ui.select(util.find_worldfiles(), {
+        local worldfiles = util.find_worldfiles()
+        if #worldfiles == 1 then
+            f(worldfile_full_path(worldfiles[1]))
+            return
+        end
+        if #worldfiles < 1 then
+            error("There are no existing worldfiles")
+        end
+        vim.ui.select(worldfiles, {
             prompt = "Select a worldfile to run",
-            format_item = function(item) return string.sub(item, #string.format("%s/worlds/", util.current_root) + 1) end,
+            format_item = function(item) return worldfile_relative_path(item) end,
         }, function(choice)
             if choice == nil then
                 return
             end
-            f(string.format("%s/worlds/%s", util.current_root, choice))
+            f(worldfile_full_path(choice))
         end)
     end
 end
@@ -63,11 +79,11 @@ end
 ---@field opts table|nil Optional command-attributes
 local user_commands = {
     ["Webots"] = {
-        command = make_webots_command(util.webots_realtime),
+        command = webots_worldfile_command(util.webots_realtime),
         opts = { nargs = "*", complete = webots_complete },
     },
     ["WebotsFast"] = {
-        command = make_webots_command(util.webots_fast),
+        command = webots_worldfile_command(util.webots_fast),
         opts = { nargs = "*", complete = webots_complete },
     },
 }

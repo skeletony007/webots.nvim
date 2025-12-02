@@ -16,6 +16,9 @@ return {
         "Webots",
         "WebotsRealtime",
         "WebotsFast",
+        
+        -- currently only implemented for Open JDK
+        "WebotsExternRobotController",
     },
 }
 ```
@@ -41,8 +44,12 @@ require("webots").jdtls.setup()
 
 #### Open JDK
 
-Sets up openjdk with Neovim `:make` command.
+Sets up openjdk with Neovim `:make` command and adds
+`:WebotsExternRobotController` user command to [run extern robot controllers].
 
 ```lua
 require("webots").openjdk.setup()
 ```
+
+[run extern robot controllers]:
+https://cyberbotics.com/doc/guide/running-extern-robot-controllers

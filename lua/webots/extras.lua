@@ -7,7 +7,7 @@ local tbl_deep_extend, tbl_contains = vim.tbl_deep_extend, vim.tbl_contains
 --- @class webots.Config
 --- @field name? string
 --- @field filetypes? string[]
---- @field callback? fun()
+--- @field callback? fun(opts)
 
 ---@param t table
 ---@param config_name string
@@ -35,7 +35,7 @@ function configs.__newindex(t, config_name, config_def)
         event_conf.callback = function(opts)
             local webots_root = util.webots_root(opts.buf)
             if webots_root ~= nil then
-                config.callback()
+                config.callback({ buf = opts.buf })
             end
             util.current_root = webots_root
         end
