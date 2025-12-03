@@ -12,7 +12,7 @@ local user_command_aliases = {
     },
 }
 
---- Complete function providing worldfile relative paths (relative to Webots root)
+--- Complete function providing worldfile relative paths (relative to worlds)
 ---
 --- Discards ArgLead and CursorPos.
 ---@param _ string ArgLead
@@ -34,7 +34,7 @@ end
 ---
 ---@param f fun(worldfile: string) Function that takes the full path to a worldfile
 ---@return fun(opts: table) command New command
-local webots_worldfile_command = function(f)
+local worldfile_command = function(f)
     local worldfile_full_path = function(relative_worldfile_path)
         return util.project_full_path(string.format("worlds/%s", relative_worldfile_path))
     end
@@ -79,11 +79,11 @@ end
 ---@field opts table|nil Optional command-attributes
 local user_commands = {
     ["Webots"] = {
-        command = webots_worldfile_command(util.webots_realtime),
+        command = worldfile_command(util.webots_realtime),
         opts = { nargs = "*", complete = webots_complete },
     },
     ["WebotsFast"] = {
-        command = webots_worldfile_command(util.webots_fast),
+        command = worldfile_command(util.webots_fast),
         opts = { nargs = "*", complete = webots_complete },
     },
 }
