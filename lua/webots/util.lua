@@ -19,18 +19,8 @@ local is_webots_root = function(path)
     end
 
     -- https://cyberbotics.com/doc/guide/the-standard-file-hierarchy-of-a-project
-    local root_markers = {
-        "controllers",
-        "protos",
-        "plugins",
-        "worlds",
-    }
-
-    for _, root_marker in pairs(root_markers) do
-        local stat = vim.uv.fs_stat(vim.fs.joinpath(path, root_marker))
-        if stat == nil or stat.type ~= "directory" then
-            return false
-        end
+    if M.find_worldfiles(path) == nil then
+        return false
     end
 
     vim.notify(string.format([[[webots] found webots root at "%s".]], path), vim.log.levels.INFO)
@@ -53,11 +43,11 @@ M.webots_root = function(source)
     return nil
 end
 
-M.find_worldfiles = function()
+M.find_worldfiles = function(webots_root)
     return vim.fs.find(function(name) return name:match(".*%.wbt$") end, {
         limit = math.huge,
         type = "file",
-        path = string.format("%s/worlds", M.current_root),
+        path = string.format("%s/worlds", webots_root),
     })
 end
 

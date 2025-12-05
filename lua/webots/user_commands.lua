@@ -18,13 +18,20 @@ local user_command_aliases = {
 ---@param _ string ArgLead
 ---@param line string The entire command line
 ---@return table
-local webots_complete = function(_, line)
+local worldfile_complete = function(_, line)
+    local webots_root = util.webots_root(vim.api.nvim_get_current_buf())
+    util.current_root = webots_root
+    if webots_root == nil then
+        vim.notify("[webots] current buffer is not part of a webots project.", vim.log.levels.WARN)
+        return {}
+    end
+
     local l = vim.split(line, "%s+")
     return vim.tbl_filter(
         function(val) return vim.startswith(val, l[#l]) end,
         vim.tbl_map(
             function(item) return util.project_relative_path(item):sub(#"worlds/" + 1) end,
-            util.find_worldfiles()
+            util.find_worldfiles(util.current_root)
         )
     )
 end
@@ -35,6 +42,12 @@ end
 ---@param f fun(worldfile: string) Function that takes the full path to a worldfile
 ---@return fun(opts: table) command New command
 local worldfile_command = function(f)
+    local webots_root = util.webots_root(vim.api.nvim_get_current_buf())
+    util.current_root = webots_root
+    if webots_root == nil then
+        error("Current buffer is not part of a Webots project.")
+    end
+
     local worldfile_full_path = function(relative_worldfile_path)
         return util.project_full_path(string.format("worlds/%s", relative_worldfile_path))
     end
@@ -51,7 +64,7 @@ local worldfile_command = function(f)
         if #fargs > 1 then
             error("Too many arguments.")
         end
-        local worldfiles = util.find_worldfiles()
+        local worldfiles = util.find_worldfiles(util.current_root)
         if #worldfiles == 1 then
             f(worldfile_full_path(worldfiles[1]))
             return
@@ -80,11 +93,11 @@ end
 local user_commands = {
     ["Webots"] = {
         command = worldfile_command(util.webots_realtime),
-        opts = { nargs = "*", complete = webots_complete },
+        opts = { nargs = "*", complete = worldfile_complete },
     },
     ["WebotsFast"] = {
         command = worldfile_command(util.webots_fast),
-        opts = { nargs = "*", complete = webots_complete },
+        opts = { nargs = "*", complete = worldfile_complete },
     },
 }
 

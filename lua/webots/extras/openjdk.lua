@@ -17,6 +17,12 @@ return {
             --      DriveController
             -- ```
             vim.api.nvim_buf_create_user_command(opts.buf, "WebotsExternRobotController", function(o)
+                local webots_root = util.webots_root(vim.api.nvim_get_current_buf())
+                util.current_root = webots_root
+                if webots_root == nil then
+                    error("Current buffer is not part of a Webots project.")
+                end
+
                 local fargs = o.fargs
                 if #fargs ~= 1 then
                     error("Wrong number of arguments (expected 1)")
@@ -34,6 +40,13 @@ return {
             end, {
                 nargs = "*",
                 complete = function(_, line)
+                    local webots_root = util.webots_root(vim.api.nvim_get_current_buf())
+                    util.current_root = webots_root
+                    if webots_root == nil then
+                        vim.notify("[webots] current buffer is not part of a webots project.", vim.log.levels.ERROR)
+                        return {}
+                    end
+
                     local class_files = vim.fs.find(function(name) return name:match(".*%.class$") end, {
                         limit = math.huge,
                         type = "file",
