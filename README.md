@@ -20,6 +20,11 @@ return {
         -- currently only implemented for Open JDK
         "WebotsExternRobotController",
     },
+
+    ft = {
+        "wbt",
+        "wbproj",
+    },
 }
 ```
 
