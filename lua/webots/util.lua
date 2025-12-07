@@ -23,7 +23,6 @@ local is_webots_root = function(path)
         return false
     end
 
-    vim.notify(string.format([[[webots] found webots root at "%s".]], path), vim.log.levels.INFO)
     table.insert(cached_roots, path)
     return true
 end
